@@ -24,8 +24,9 @@ jobs:
 
         - name: Deploy to Vercel 🌐
           env:
-            VERCEL_TOKEN: ${{ secrets.VERCEL_AUTH_TOKEN }}
+            VERCEL_AUTH_TOKEN: ${{ secrets.VERCEL_AUTH_TOKEN }}
           run: |
+            echo "Vercel token: $VERCEL_AUTH_TOKEN"
             npm install -g vercel
-            vercel --prod --token $VERCEL_TOKEN --yes
+            vercel --prod --token $VERCEL_AUTH_TOKEN --yes
   
