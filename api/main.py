@@ -1,78 +1,85 @@
-from fastapi import FastAPI, UploadFile, File
-from fastapi.middleware.cors import CORSMiddleware
-from google.oauth2.credentials import Credentials
-from google_auth_oauthlib.flow import InstalledAppFlow
-from googleapiclient.discovery import build
-from googleapiclient.http import MediaIoBaseUpload
-from pydantic import BaseModel
-import io
+# -*- coding: utf-8 -*-
+from flask import Flask, request, jsonify
+from kaggle.api.kaggle_api_extended import KaggleApi
 import os
+import tempfile
+import uuid
+import shutil
 import json
+from flask_cors import CORS
 
-app = FastAPI()
+app = Flask(__name__)
 
-# Enable CORS
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+# Permettre toutes les origines (CORS)
+CORS(app)
 
-# If modifying these scopes, delete the file token.json.
-SCOPES = ['https://www.googleapis.com/auth/drive.file']
+KAGGLE_DATASET_SLUG = "audio-dataset-auto-upload-collectml-test"
+KAGGLE_DATASET_TITLE = "Audio Dataset Auto upload CollectML Test"
+KAGGLE_DATASET_DIR = "audio_dataset_collectml_test"
 
-class AudioUploadResponse(BaseModel):
-    success: bool
-    file_id: str = None
-    error: str = None
+KAGGLE_USERNAME = "lioneltoton"
+KAGGLE_KEY = "481062f8a29ca2be8c326d0d7cc3326b"
 
-def get_google_drive_service():
-    creds = None
-    
-    # Load credentials from the credentials.json file
-    with open('credentials.json', 'r') as f:
-        creds_data = json.load(f)
-    
-    # Initialize credentials with client secrets
-    flow = InstalledAppFlow.from_client_secrets_file(
-        'credentials.json', SCOPES)
-    creds = flow.run_local_server(port=0)
-    
-    return build('drive', 'v3', credentials=creds)
-
-@app.post("/upload-audio/", response_model=AudioUploadResponse)
-async def upload_audio(file: UploadFile = File(...), corpus_id: int = None):
+@app.route("/upload-audio/", methods=["POST"])
+def upload_audio():
     try:
-        # Create Google Drive API service
-        service = get_google_drive_service()
+        # Authentification avec Kaggle
+        os.environ["KAGGLE_USERNAME"] = KAGGLE_USERNAME
+        os.environ["KAGGLE_KEY"] = KAGGLE_KEY
+        api = KaggleApi()
+        api.authenticate()
+
+        # Vérifier la présence du fichier dans la requête
+        if 'file' not in request.files:
+            return jsonify({"success": False, "error": "No file part"}), 400
         
-        # Read the file into memory
-        file_content = await file.read()
-        
-        # Create file metadata
-        file_metadata = {
-            'name': f'corpus_{corpus_id}_{file.filename}',
-            'mimeType': 'audio/wav'
+        file = request.files['file']
+        if file.filename == '':
+            return jsonify({"success": False, "error": "No selected file"}), 400
+
+        # Sauvegarde du fichier
+        filename = f"audio_{uuid.uuid4().hex}.wav"
+        tmp_dir = tempfile.gettempdir()
+        dataset_path = os.path.join(tmp_dir, KAGGLE_DATASET_DIR)
+        os.makedirs(dataset_path, exist_ok=True)
+
+        file_path = os.path.join(dataset_path, filename)
+        file.save(file_path)
+
+        # Création ou ajout au dataset Kaggle
+        dataset_ref = f"{os.environ['KAGGLE_USERNAME']}/{KAGGLE_DATASET_SLUG}"
+ 
+        # Création du fichier dataset-metadata.json
+        metadata = {
+            "title": "Audio Dataset Auto upload Test",
+            "id": f"{os.environ['KAGGLE_USERNAME']}/{KAGGLE_DATASET_SLUG}",
+            "licenses": [{"name": "CC0-1.0"}],
+            "description": "This dataset contains audio files uploaded automatically.",
+            "keywords": ["audio", "dataset", "upload", "machine learning"]
         }
-        
-        # Create media
-        fh = io.BytesIO(file_content)
-        media = MediaIoBaseUpload(fh, mimetype='audio/wav', resumable=True)
-        
-        # Upload file to Google Drive
-        file = service.files().create(
-            body=file_metadata,
-            media_body=media,
-            fields='id'
-        ).execute()
-        
-        return AudioUploadResponse(success=True, file_id=file.get('id'))
-        
+
+        try:
+            api.dataset_view(dataset_ref)
+            dataset_exists = True
+            print("Dataset exists")
+        except:
+            dataset_exists = False
+
+        if not dataset_exists:
+            with open(os.path.join(dataset_path, "dataset-metadata.json"), "w") as f:
+                json.dump(metadata, f)
+            api.dataset_create_new(dataset_path, public=True, quiet=True)
+            message = f"Dataset créé avec {filename}"
+        else:
+            # Ajout du fichier au dataset existant
+            api.dataset_upload_file(dataset_ref, file_path, quiet=True)
+            message = f"{filename} ajouté au dataset existant"
+
+        return jsonify({"success": True, "message": message})
+
     except Exception as e:
-        return AudioUploadResponse(success=False, error=str(e))
+        return jsonify({"success": False, "error": str(e)}), 500
+
 
 if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    app.run(debug=True, host="0.0.0.0", port=8100)

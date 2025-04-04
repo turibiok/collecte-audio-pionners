@@ -10,7 +10,7 @@ const AudioRecorder: React.FC<AudioRecorderProps> = ({ onRecordingComplete }) =>
     timer: 0,
   });
 
-  const timerRef = useRef<NodeJS.Timeout>();
+  const timerRef = useRef<ReturnType<typeof setInterval>>();
 
   useEffect(() => {
     return () => {
@@ -45,7 +45,7 @@ const AudioRecorder: React.FC<AudioRecorderProps> = ({ onRecordingComplete }) =>
       console.error('Error accessing microphone:', error);
     }
   };
-
+ 
   const stopRecording = () => {
     if (state.mediaRecorder && state.isRecording) {
       state.mediaRecorder.stop();
