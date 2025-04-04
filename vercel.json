@@ -3,13 +3,11 @@
     "builds": [
       {
         "src": "api/main.py",
-        "use": "@vercel/python",
-        "dest": "api/main.py"
+        "use": "@vercel/python"
       },
       {
         "src": "src/package.json",
-        "use": "@vercel/node",
-        "dest": "/"
+        "use": "@vercel/node"
       }
     ],
     "env": {
