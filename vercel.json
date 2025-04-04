@@ -3,12 +3,28 @@
     "builds": [
       {
         "src": "api/main.py",
-        "use": "@vercel/python"
+        "use": "@vercel/python",
+        "dest": "api/main.py"
+      },
+      {
+        "src": "src/package.json",
+        "use": "@vercel/node",
+        "dest": "/"
       }
     ],
     "env": {
       "KAGGLE_USERNAME": "lioneltoton",
       "KAGGLE_KEY": "481062f8a29ca2be8c326d0d7cc3326b"
-    }
+    },
+    "routes": [
+      {
+        "src": "/upload-audio",
+        "dest": "/api/main.py"
+      },
+      {
+        "src": "/(.*)",
+        "dest": "/src/$1"
+      }
+    ]
   }
   

@@ -167,7 +167,7 @@ function App() {
       formData.append('file', audioBlob, 'recording.wav');
       formData.append('corpus_id', selectedCorpus.id.toString());
 
-      const response = await fetch('http://localhost:8100/upload-audio/', {
+      const response = await fetch('https://collecte-audio-pionners.vercel.app/upload-audio/', {
         method: 'POST',
         body: formData,
       });
