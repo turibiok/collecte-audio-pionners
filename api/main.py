@@ -17,8 +17,13 @@ KAGGLE_DATASET_SLUG = "audio-dataset-auto-upload-collectml-test"
 KAGGLE_DATASET_TITLE = "Audio Dataset Auto upload CollectML Test"
 KAGGLE_DATASET_DIR = "audio_dataset_collectml_test"
 
-KAGGLE_USERNAME = "lioneltoton"
-KAGGLE_KEY = "481062f8a29ca2be8c326d0d7cc3326b"
+
+KAGGLE_USERNAME = os.getenv('KAGGLE_USERNAME')
+KAGGLE_KEY = os.getenv('KAGGLE_KEY')
+
+
+# KAGGLE_USERNAME = "lioneltoton"
+# KAGGLE_KEY = "481062f8a29ca2be8c326d0d7cc3326b"
 
 @app.route("/upload-audio/", methods=["POST"])
 def upload_audio():
