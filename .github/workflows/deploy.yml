@@ -1,12 +1,45 @@
-name: Deploy Collection Audio
+    # runs-on: ubuntu-latest
+
+    # steps:
+    #   - name: Checkout code
+    #     uses: actions/checkout@v3
+
+    #   - name: Set up Node.js
+    #     uses: actions/setup-node@v3
+    #     with:
+    #       node-version: '16'
+
+    #   - name: Install dependencies (frontend)
+    #     run: |
+    #       cd src
+    #       npm install
+
+    #   - name: Build frontend
+    #     run: |
+    #       cd src
+    #       npm run build
+
+    #   - name: Deploy to Vercel
+    #     env:
+    #       VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+    #     run: |
+    #       curl -X POST -H "Authorization: Bearer $VERCEL_TOKEN" \
+    #       -d '{"gitBranch": "main", "gitRepository": {"repoId": "your-repo-id"}}' \
+    #       https://api.vercel.com/v13/deployments
+
+
+
+
+name: CI/CD Deployment
 
 on:
   push:
     branches:
-      - main  # Déployer lorsque tu pousses sur la branche principale
+      - main  # Déploiement uniquement pour la branche principale
 
 jobs:
-  deploy:
+  # Job 1: Déploiement du frontend sur Vercel
+  deploy_frontend:
     runs-on: ubuntu-latest
     steps:
         - name: Checkout code
@@ -29,4 +62,27 @@ jobs:
             echo "Vercel token: $AUTH_TOKEN_VERCEL"
             npm install -g vercel
             vercel --prod --token $AUTH_TOKEN_VERCEL --yes
-  
+
+  # Job 2: Déploiement du backend sur Render
+  deploy_backend:
+    runs-on: ubuntu-latest
+    needs: deploy_frontend  # Ce job ne démarre que lorsque le job frontend est terminé
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies (backend)
+        run: |
+          cd api
+          python -m pip install --upgrade pip
+          pip install -r api/requirements.txt
+
+      - name: Deploy to Render
+        run: |
+          curl -X POST https://api.render.com/deploy/srv-cvokcv3uibrs73bsv350?key=vKoUqfz2XYE
