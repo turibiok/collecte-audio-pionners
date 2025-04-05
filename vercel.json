@@ -1,32 +1,13 @@
 {
-    "version": 2,
-    "builds": [
-      {
-        "src": "api/main.py",
-        "use": "@vercel/python"
-      },
-      {
-        "src": "src/package.json",
-        "use": "@vercel/node"
-      },
-      {
-        "src": "src/dist/**/*",
-        "use": "@vercel/static"
-      }
-    ],
-    "env": {
-      "KAGGLE_USERNAME": "lioneltoton",
-      "KAGGLE_KEY": "481062f8a29ca2be8c326d0d7cc3326b"
+  "version": 2,
+  "builds": [
+    {
+      "src": "src/package.json",
+      "use": "@vercel/node"
     },
-    "routes": [
-      {
-        "src": "/upload-audio",
-        "dest": "/api/main.py"
-      },
-      {
-        "src": "/(.*)",
-        "dest": "/dist/$1"
-      }
-    ]
-  }
-  
+    {
+      "src": "src/dist/**/*",
+      "use": "@vercel/static"
+    }
+  ]
+}
