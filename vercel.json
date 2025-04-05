@@ -1,13 +1,11 @@
 {
-  "version": 2,
   "builds": [
     {
-      "src": "src/package.json",
+      "src": "package.json",
       "use": "@vercel/node"
-    },
-    {
-      "src": "src/dist/**/*",
-      "use": "@vercel/static"
     }
+  ],
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/" }
   ]
 }
