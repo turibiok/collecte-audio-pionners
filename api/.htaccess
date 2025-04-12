@@ -8,11 +8,12 @@ PassengerStartupFile ./dist/server.js
 
 
 # Redirection HTTP vers HTTPS
-# <IfModule mod_rewrite.c>
-#   RewriteEngine On
-#   RewriteCond %{HTTPS} off
-#   RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
-# </IfModule>
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteCond %{HTTPS} off
+  RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+</IfModule>
 
 
-# PassengerAppEnv development
+# PassengerAppEnv production
+PassengerAppEnv production

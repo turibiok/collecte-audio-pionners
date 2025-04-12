@@ -21,6 +21,8 @@ function App() {
     setRecordingStatus('Enregistrement terminé. Cliquez sur "Envoyer" pour soumettre.');
   };
 
+
+
   const handleSendAudio = async () => {
     if (!audioBlob || !selectedCorpus) {
       setRecordingStatus('Veuillez sélectionner un corpus et enregistrer un audio.');
@@ -28,31 +30,37 @@ function App() {
     }
 
     setIsLoading(true); // Active le loader
+
     try {
       const formData = new FormData();
       formData.append('file', audioBlob, 'recording.wav');
       formData.append('corpus_id', selectedCorpus.id.toString());
-      // https://collectpionner.ipofafrica.com/
-      // const response = await fetch('http://collectpionner.sublimworld.com/api/upload-audio/', {
-      const response = await fetch('http://collectpionner.ipofafrica.com/api/upload-audio/', {
-
-      // const response = await fetch('http://localhost:3000/api/upload-audio/', {
+      // http://collectpionner.ipofafrica.com:3000/api/upload-audio/
+      // const response = await fetch('http://collectpionner.ipofafrica.com/api/upload-audio/', {
+      const response = await fetch('http://collectpionner.sublimworld.com:3000/api/upload-audio/', {
         method: 'POST',
         body: formData,
         mode: 'no-cors',  // Cela contourne l'erreur CORS
         headers: {
-          'Accept': 'application/json',
+          'Content-Type': 'multipart/form-data',
         },
       });
+  
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
       
       const data = await response.json();
-
+      
+      console.log(data);
       if (data.success) {
         setRecordingStatus('✅ Audio envoyé avec succès.');
         setAudioBlob(null); // On vide l'audio après envoi
       } else {
         throw new Error(data.error || 'Erreur lors de l\'envoi');
       }
+
+
     } catch (error) {
       console.error('Error uploading audio:', error);
       setRecordingStatus('❌ Erreur lors de l\'envoi de l\'audio');
@@ -60,6 +68,51 @@ function App() {
       setIsLoading(false); // Désactive le loader
     }
   };
+  
+
+
+
+  // const handleSendAudio2 = async () => {
+  //   if (!audioBlob || !selectedCorpus) {
+  //     setRecordingStatus('Veuillez sélectionner un corpus et enregistrer un audio.');
+  //     return;
+  //   }
+
+  //   setIsLoading(true); // Active le loader
+  //   try {
+  //     const formData = new FormData();
+  //     formData.append('file', audioBlob, 'recording.wav');
+  //     formData.append('corpus_id', selectedCorpus.id.toString());
+  //     // https://collectpionner.ipofafrica.com/
+  //     const response = await fetch('https://collectpionner.sublimworld.com/api/upload-audio/', {
+  //     // const response = await fetch('http://collectpionner.ipofafrica.com/api/upload-audio/', {
+
+  //     // const response = await fetch('http://localhost:3000/api/upload-audio/', {
+  //       method: 'POST',
+  //       body: formData,
+  //       mode: 'no-cors',  // Cela contourne l'erreur CORS
+  //       headers: {
+  //         'Accept': 'application/json',
+  //       },
+  //     });
+      
+  //     const data = await response.json();
+
+  //     if (data.success) {
+  //       setRecordingStatus('✅ Audio envoyé avec succès.');
+  //       setAudioBlob(null); // On vide l'audio après envoi
+  //     } else {
+  //       throw new Error(data.error || 'Erreur lors de l\'envoi');
+  //     }
+  //   } catch (error) {
+  //     console.error('Error uploading audio:', error);
+  //     setRecordingStatus('❌ Erreur lors de l\'envoi de l\'audio');
+  //   } finally {
+  //     setIsLoading(false); // Désactive le loader
+  //   }
+  // };
+
+
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-green-500 to-green-600">
