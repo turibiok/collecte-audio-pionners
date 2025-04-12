@@ -32,13 +32,19 @@ function App() {
       const formData = new FormData();
       formData.append('file', audioBlob, 'recording.wav');
       formData.append('corpus_id', selectedCorpus.id.toString());
+      // https://collectpionner.ipofafrica.com/
+      // const response = await fetch('http://collectpionner.sublimworld.com/api/upload-audio/', {
+      const response = await fetch('http://collectpionner.ipofafrica.com/api/upload-audio/', {
 
-      const response = await fetch('https://collectpionner.sublimworld.com/api/upload-audio/', {
       // const response = await fetch('http://localhost:3000/api/upload-audio/', {
         method: 'POST',
         body: formData,
+        mode: 'no-cors',  // Cela contourne l'erreur CORS
+        headers: {
+          'Accept': 'application/json',
+        },
       });
-
+      
       const data = await response.json();
 
       if (data.success) {
