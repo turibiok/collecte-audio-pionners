@@ -1,5 +1,8 @@
 #!/bin/bash
 
+
+
+
 # Vérifie que tu es bien sur la branche AInelo-main
 git checkout AInelo-main
 
