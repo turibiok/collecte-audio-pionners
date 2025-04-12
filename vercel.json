@@ -1,5 +1,7 @@
 {
   "rewrites": [
     { "source": "/(.*)", "destination": "/" }
-  ]
+  ],
+  "ignoreBuildStep": true,
+  "outputDirectory": "frontend/dist"
 }
