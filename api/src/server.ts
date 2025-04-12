@@ -5,16 +5,13 @@ import cors from 'cors';
 const app = express();
 const PORT = 3000;
 
-
-// Autorise toutes les origines (à sécuriser plus tard)
+// CORS avec toutes les origines autorisées (sécurisé uniquement en local ou dev)
 app.use(cors({
-  origin: '*', // ou précise ['http://localhost:5173', 'https://collectpionner.sublimworld.com']
+  origin: ['https://collecte-audio-pionners.vercel.app/', 'http://localhost:5173/'], // Autorise toutes les origines
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type'],
 }));
 
-
-app.use(cors());
 app.use(express.json());
 
 // Routes
@@ -23,4 +20,3 @@ app.use('/api', audioRoutes);
 app.listen(PORT, () => {
   console.log(`Serveur lancé sur http://localhost:${PORT}`);
 });
-
