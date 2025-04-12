@@ -32,7 +32,9 @@ function App() {
       const formData = new FormData();
       formData.append('file', audioBlob, 'recording.wav');
       formData.append('corpus_id', selectedCorpus.id.toString());
+
       const response = await fetch('https://collectpionner.sublimworld.com/api/upload-audio/', {
+      // const response = await fetch('http://localhost:3000/api/upload-audio/', {
         method: 'POST',
         body: formData,
       });
