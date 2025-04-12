@@ -12,6 +12,14 @@ print_tree() {
     done
 }
 
+# List files in the current directory
+for file in *; do
+    if [[ -f "$file" ]]; then
+        echo "├── $file"
+    fi
+done
+
+# List directories and their contents
 for d in */; do
     if [[ "${d}" != "node_modules/" && "${d}" != "pool/" ]]; then
         echo "$(basename "$d")/"

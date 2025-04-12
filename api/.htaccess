@@ -1,5 +1,5 @@
 # DO NOT REMOVE. CLOUDLINUX PASSENGER CONFIGURATION BEGIN
-PassengerAppRoot "/home/toli8447/sublime_world/backend"
+PassengerAppRoot "/home/toli8447/collectpionner/collecte-audio-pionners/api"
 PassengerBaseURI "/"
 PassengerNodejs "/opt/alt/alt-nodejs20/root/usr/bin/node"
 PassengerAppType node
