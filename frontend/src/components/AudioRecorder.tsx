@@ -3,6 +3,8 @@ import { Mic, Square } from 'lucide-react';
 import { AudioRecorderProps, AudioRecorderState } from '../types';
 
 const AudioRecorder: React.FC<AudioRecorderProps> = ({ onRecordingComplete }) => {
+  
+  
   const [state, setState] = useState<AudioRecorderState>({
     isRecording: false,
     mediaRecorder: null,
@@ -67,21 +69,22 @@ const AudioRecorder: React.FC<AudioRecorderProps> = ({ onRecordingComplete }) =>
     <div className="flex flex-col items-center gap-4">
       <div className="flex gap-4">
         {!state.isRecording ? (
-          <button
+            <button
             onClick={startRecording}
-            className="flex items-center gap-2 px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition-colors"
-          >
+            className="flex items-center gap-2 px-4 py-2 bg-green-500 text-white rounded-2xl hover:bg-green-600 transition-all
+            shadow-[0_4px_0_0_#16a34a] hover:shadow-[0_2px_0_0_#16a34a] hover:translate-y-[2px] active:translate-y-[4px] active:shadow-none"
+            >
             <Mic size={20} />
-            Démarrer l'enregistrement
-          </button>
-        ) : (
-          <button
+            
+            </button>
+          ) : (
+            <button
             onClick={stopRecording}
-            className="flex items-center gap-2 px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition-colors"
-          >
+            className="flex items-center gap-2 px-4 py-2 bg-red-500 text-white rounded-2xl hover:bg-red-600 transition-all
+            shadow-[0_4px_0_0_#dc2626] hover:shadow-[0_2px_0_0_#dc2626] hover:translate-y-[2px] active:translate-y-[4px] active:shadow-none"
+            >
             <Square size={20} />
-            Arrêter
-          </button>
+            </button>
         )}
       </div>
       <div className="text-xl font-mono">{formatTime(state.timer)}</div>
