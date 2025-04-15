@@ -5,7 +5,7 @@ import cors from 'cors';
 const app = express();
 
 // Autorise la détection du proxy
-app.set('trust proxy', true);
+app.set('trust proxy', 1); // 1 = 1er niveau de proxy, souvent suffisant sur un mutualisé
 
 // Utilisation du port provenant de l'environnement sinon 3000 par défaut
 const PORT = process.env.PORT || 5100;
@@ -16,6 +16,14 @@ app.use(cors({
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type']
 }));
+
+app.use((req, res, next) => {
+  if (!req.secure) {
+    return res.redirect('https://' + req.headers.host + req.url);
+  }
+  next();
+});
+
 
 app.use(express.json());
 

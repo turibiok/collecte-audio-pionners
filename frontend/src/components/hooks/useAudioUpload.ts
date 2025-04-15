@@ -36,9 +36,11 @@ export const useAudioUpload = () => {
         audio_base64: base64Audio,
         file: 'recording.wav',
       };
+      console.log(payload)
 
-      const response = await fetch('https://collectpionner.sublimworld.com/api/upload-audio/', {
+      const response = await fetch('http://collectpionner.sublimworld.com/api/upload-audio/', {
         method: 'POST',
+        mode: "no-cors",
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       });
