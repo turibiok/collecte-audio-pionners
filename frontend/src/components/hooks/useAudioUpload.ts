@@ -38,9 +38,9 @@ export const useAudioUpload = () => {
       };
       console.log(payload)
 
-      const response = await fetch('http://collectpionner.sublimworld.com/api/upload-audio/', {
+      const response = await fetch('https://collectpionner.ddns.net/api/upload-audio/', {
         method: 'POST',
-        mode: "no-cors",
+        // mode: "no-cors",
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       });
