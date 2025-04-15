@@ -8,7 +8,7 @@ const app = express();
 app.set('trust proxy', true);
 
 // Utilisation du port provenant de l'environnement sinon 3000 par défaut
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 5100;
 
 // CORS avec toutes les origines autorisées (pour dev uniquement, à adapter en prod)
 app.use(cors({
