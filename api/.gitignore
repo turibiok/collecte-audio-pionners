@@ -157,5 +157,5 @@ out
 .idea/sonarIssues.xml
 
 
-
-dist
+# BUILD OUTPUT
+dist/
