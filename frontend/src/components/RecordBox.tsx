@@ -23,7 +23,7 @@ function RecordBox() {
   } = useAudioUpload();
 
   return (
-    <div className="h-[80vh] w-[80vw] md:h-1/2 md:w-1/2 bg-white rounded-2xl shadow-lg p-8 max-w-2xl mx-auto">
+    <div className="h-auto -[80vw] md:h-1/2 md:w-1/2 bg-white rounded-2xl shadow-lg p-8 max-w-2xl mx-auto">
       <div className="flex items-center gap-3 mb-8">
         <Headphones className="w-8 h-8 text-green-600" />
         <h1 className="text-3xl font-bold text-gray-800">Collecte Audio</h1>
@@ -57,7 +57,7 @@ function RecordBox() {
         <AudioRecorder onRecordingComplete={handleRecordingComplete} />
 
         {audioBlob && (
-          <div className="border-2 border-red-400 mt-4 space-x-4 w-full flex flex-col items-center justify-center">
+          <div className="py-2 border-[0.5px] border-slate-200 mt-4 space-x-4 w-full rounded-2xl flex flex-col items-center justify-center">
             <AudioPlayer audioBlob={audioBlob} />
             
             <button

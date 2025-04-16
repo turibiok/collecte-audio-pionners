@@ -1,54 +1,106 @@
+// import { Request, Response } from 'express';
+// import path from 'path';
+// import fs from 'fs';
+// import { error } from 'console';
+
+// interface AudioUploadBase64Body {
+//   audio_base64: string;
+//   corpus_id: string | number;
+//   file: string;
+// }
+
+// // Typage personnalisé de la requête
+// type AudioBase64Request = Request<{}, {}, AudioUploadBase64Body>;
+
+
+// export const uploadAudio = async (req: AudioBase64Request, res: Response ) => {
+  
+//   try {
+//     const {corpus_id, file, audio_base64} = req.body;
+
+//     if (!corpus_id || !file || !audio_base64) {
+//       return res.status(400).json({
+//         success: false, 
+//         error: 'Champs manquants.'
+//       })
+//     }
+
+//     const buffer = Buffer.from(audio_base64, 'base64')
+
+//     const uploadDir = path.join(__dirname, '..', '..', 'all-audio', String(corpus_id));
+
+//     if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, {recursive: true});
+
+//     const extension = path.extname(file);
+//     const safeFileName = `${Date.now()}-${Math.random().toString(36).substring(2,10)}${extension}`;
+
+//     const filePath = path.join(uploadDir, safeFileName);
+
+//     fs.writeFileSync(filePath, buffer);
+
+//     return res.status(200).json({
+//       success: true,
+//       message:"Audio encoded received and saved",
+//       path: filePath,
+//     })
+
+//   } catch (error) {
+//     console.error("Erreur upload base64 :", error)
+//     return res.status(500).json({
+//       success: false,
+//       error: "Internal Server Error"
+//     })
+//   }
+// }
+
+
+
+
 import { Request, Response } from 'express';
 import path from 'path';
 import fs from 'fs';
-import { error } from 'console';
+import multer from 'multer';
 
-interface AudioUploadBase64Body {
-  audio_base64: string;
-  corpus_id: string | number;
-  file: string;
+// Configuration de multer (stockage en mémoire ou temporaire, selon le besoin)
+const storage = multer.memoryStorage();
+export const uploadMiddleware = multer({ storage }).single('file'); // 'file' doit correspondre au nom du champ FormData
+
+// Type de la requête avec fichier + champ texte
+interface AudioUploadFormFields {
+  corpus_id: string;
 }
 
-// Typage personnalisé de la requête
-type AudioBase64Request = Request<{}, {}, AudioUploadBase64Body>;
-
-
-export const uploadAudio = async (req: AudioBase64Request, res: Response ) => {
-  
+export const uploadAudio = async (req: Request<{}, {}, AudioUploadFormFields> & { file?: Express.Multer.File }, res: Response) => {
   try {
-    const {corpus_id, file, audio_base64} = req.body;
+    const { corpus_id } = req.body;
+    const file = req.file;
 
-    if (!corpus_id || !file || !audio_base64) {
+    if (!corpus_id || !file) {
       return res.status(400).json({
-        success: false, 
-        error: 'Champs manquants.'
-      })
+        success: false,
+        error: 'Champs manquants (corpus_id ou fichier).',
+      });
     }
 
-    const buffer = Buffer.from(audio_base64, 'base64')
-
     const uploadDir = path.join(__dirname, '..', '..', 'all-audio', String(corpus_id));
+    if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
 
-    if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, {recursive: true});
-
-    const extension = path.extname(file);
-    const safeFileName = `${Date.now()}-${Math.random().toString(36).substring(2,10)}${extension}`;
-
+    const extension = path.extname(file.originalname) || '.wav';
+    const safeFileName = `${Date.now()}-${Math.random().toString(36).substring(2, 10)}${extension}`;
     const filePath = path.join(uploadDir, safeFileName);
 
-    fs.writeFileSync(filePath, buffer);
+    fs.writeFileSync(filePath, file.buffer);
 
     return res.status(200).json({
       success: true,
-      message:"Audio encoded received and saved",
+      message: '✅ Audio reçu et sauvegardé avec succès.',
       path: filePath,
-    })
-
+    });
   } catch (error) {
-    console.error("Erreur upload base64 :", error)
+    console.error('Erreur upload FormData :', error);
     return res.status(500).json({
       success: false,
-      error: "Internal Server Error"
-    })
+      error: 'Erreur interne du serveur',
+    });
   }
-}
+};

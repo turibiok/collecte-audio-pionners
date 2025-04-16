@@ -4,8 +4,7 @@ import { Corpus } from '../../types';
 
 export interface AudioUploadPayload {
   corpus_id: number;
-  audio_base64: string;
-  file: string;
+  file: Blob; // ou File si tu veux plus de précision
 }
 
 export const useAudioUpload = () => {
@@ -19,6 +18,22 @@ export const useAudioUpload = () => {
     toast.success('🎤 Enregistrement terminé. Cliquez sur "Écouter" ou "Envoyer".');
   };
 
+  const createFormData = <T extends Record<string, string | Blob>>(
+    data: T
+  ): FormData => {
+    const formData = new FormData();
+    Object.entries(data).forEach(([key, value]) => {
+      if (value instanceof Blob) {
+        formData.append(key, value, 'file.wav');
+      } else {
+        formData.append(key, value);
+      }
+    });
+    return formData;
+  };
+  
+  
+
   const handleSendAudio = async () => {
     if (!audioBlob || !selectedCorpus) {
       toast.error('Veuillez sélectionner un corpus et enregistrer un audio.');
@@ -29,22 +44,19 @@ export const useAudioUpload = () => {
     setUploadProgress(0);
 
     try {
-      const base64Audio = await blobToBase64(audioBlob);
-
-      const payload: AudioUploadPayload = {
-        corpus_id: selectedCorpus.id,
-        audio_base64: base64Audio,
-        file: 'recording.wav',
-      };
-      console.log(payload)
-
-      const response = await fetch('https://collectpionner.ddns.net/api/upload-audio/', {
-        method: 'POST',
-        // mode: "no-cors",
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
+      const formData = createFormData({
+        corpus_id: selectedCorpus.id.toString(),
+        file: audioBlob
       });
 
+      // const response = await fetch('http://localhost:5100/api/upload-audio/', {
+      const response = await fetch('https://collectpionner.ddns.net/api/upload-audio/', {
+
+        method: 'POST',
+        body: formData, // PAS de Content-Type ici, le navigateur le gère
+      });
+
+      // Simulation de la progression
       for (let i = 1; i <= 100; i += 10) {
         await new Promise((res) => setTimeout(res, 50));
         setUploadProgress(i);
@@ -53,6 +65,9 @@ export const useAudioUpload = () => {
       if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
 
       const data = await response.json();
+      if (!data) throw new Error('Aucune réponse du serveur');
+      if (data.error) throw new Error(data.error);
+
       if (data.success) {
         toast.success('✅ Audio envoyé avec succès.');
         setAudioBlob(null);
@@ -65,22 +80,6 @@ export const useAudioUpload = () => {
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const blobToBase64 = (blob: Blob): Promise<string> => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onerror = reject;
-      reader.onload = () => {
-        const result = reader.result;
-        if (typeof result === 'string') {
-          resolve(result.split(',')[1]);
-        } else {
-          reject(new Error('Impossible de convertir le blob'));
-        }
-      };
-      reader.readAsDataURL(blob);
-    });
   };
 
   return {

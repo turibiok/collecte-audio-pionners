@@ -4,7 +4,6 @@ import { AudioRecorderProps, AudioRecorderState } from '../types';
 
 const AudioRecorder: React.FC<AudioRecorderProps> = ({ onRecordingComplete }) => {
   
-  
   const [state, setState] = useState<AudioRecorderState>({
     isRecording: false,
     mediaRecorder: null,
@@ -22,31 +21,60 @@ const AudioRecorder: React.FC<AudioRecorderProps> = ({ onRecordingComplete }) =>
     };
   }, []);
 
-  const startRecording = async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const mediaRecorder = new MediaRecorder(stream);
-      const audioChunks: Blob[] = [];
-
-      mediaRecorder.ondataavailable = (event) => {
-        audioChunks.push(event.data);
-      };
-
-      mediaRecorder.onstop = () => {
-        const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
-        onRecordingComplete(audioBlob);
-      };
-
-      mediaRecorder.start();
-      timerRef.current = setInterval(() => {
-        setState((prev) => ({ ...prev, timer: prev.timer + 1 }));
-      }, 1000);
-
-      setState({ isRecording: true, mediaRecorder, audioChunks, timer: 0 });
-    } catch (error) {
-      console.error('Error accessing microphone:', error);
-    }
+  const handleStartClick = () => {
+    navigator.mediaDevices.getUserMedia({ audio: true })
+      .then((stream) => {
+        const mediaRecorder = new MediaRecorder(stream);
+        const audioChunks: Blob[] = [];
+  
+        mediaRecorder.ondataavailable = (event) => {
+          audioChunks.push(event.data);
+        };
+  
+        mediaRecorder.onstop = () => {
+          const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+          onRecordingComplete(audioBlob);
+        };
+  
+        mediaRecorder.start();
+  
+        timerRef.current = setInterval(() => {
+          setState((prev) => ({ ...prev, timer: prev.timer + 1 }));
+        }, 1000);
+  
+        setState({ isRecording: true, mediaRecorder, audioChunks, timer: 0 });
+      })
+      .catch((error) => {
+        console.error('Erreur d’accès au micro', error);
+      });
   };
+  
+
+  // const startRecording = async () => {
+  //   try {
+  //     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+  //     const mediaRecorder = new MediaRecorder(stream);
+  //     const audioChunks: Blob[] = [];
+
+  //     mediaRecorder.ondataavailable = (event) => {
+  //       audioChunks.push(event.data);
+  //     };
+
+  //     mediaRecorder.onstop = () => {
+  //       const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+  //       onRecordingComplete(audioBlob);
+  //     };
+
+  //     mediaRecorder.start();
+  //     timerRef.current = setInterval(() => {
+  //       setState((prev) => ({ ...prev, timer: prev.timer + 1 }));
+  //     }, 1000);
+
+  //     setState({ isRecording: true, mediaRecorder, audioChunks, timer: 0 });
+  //   } catch (error) {
+  //     console.error('Error accessing microphone:', error);
+  //   }
+  // };
  
   const stopRecording = () => {
     if (state.mediaRecorder && state.isRecording) {
@@ -70,7 +98,7 @@ const AudioRecorder: React.FC<AudioRecorderProps> = ({ onRecordingComplete }) =>
       <div className="flex gap-4">
         {!state.isRecording ? (
             <button
-            onClick={startRecording}
+            onClick={handleStartClick}
             className="flex items-center gap-2 px-4 py-2 bg-green-500 text-white rounded-2xl hover:bg-green-600 transition-all
             shadow-[0_4px_0_0_#16a34a] hover:shadow-[0_2px_0_0_#16a34a] hover:translate-y-[2px] active:translate-y-[4px] active:shadow-none"
             >

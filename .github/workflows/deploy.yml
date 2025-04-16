@@ -37,25 +37,25 @@ jobs:
           vercel --prod --token $AUTH_TOKEN_VERCEL --yes --confirm --cwd .
           
   # Job 2: Déploiement du backend sur Render
-  deploy_backend:
-    runs-on: ubuntu-latest
-    needs: deploy_frontend
+  # deploy_backend:
+  #   runs-on: ubuntu-latest
+  #   needs: deploy_frontend
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v3
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.10'
+  #     - name: Set up Python
+  #       uses: actions/setup-python@v4
+  #       with:
+  #         python-version: '3.10'
 
-      - name: Install backend dependencies
-        run: |
-          cd api
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
+  #     - name: Install backend dependencies
+  #       run: |
+  #         cd api
+  #         python -m pip install --upgrade pip
+  #         pip install -r requirements.txt
 
-      - name: Deploy to Render
-        run: |
-          curl -X POST https://api.render.com/deploy/srv-cvokcv3uibrs73bsv350?key=vKoUqfz2XYE
+  #     - name: Deploy to Render
+  #       run: |
+  #         curl -X POST https://api.render.com/deploy/srv-cvokcv3uibrs73bsv350?key=vKoUqfz2XYE
