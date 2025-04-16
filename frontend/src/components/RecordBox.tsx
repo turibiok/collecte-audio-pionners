@@ -23,7 +23,7 @@ function RecordBox() {
   } = useAudioUpload();
 
   return (
-    <div className="h-auto -[80vw] md:h-1/2 md:w-1/2 bg-white rounded-2xl shadow-lg p-8 max-w-2xl mx-auto">
+    <div className="h-auto w-[80vw] md:h-1/2 md:w-1/2 bg-white rounded-2xl shadow-lg p-8 max-w-2xl mx-auto">
       <div className="flex items-center gap-3 mb-8">
         <Headphones className="w-8 h-8 text-green-600" />
         <h1 className="text-3xl font-bold text-gray-800">Collecte Audio</h1>
