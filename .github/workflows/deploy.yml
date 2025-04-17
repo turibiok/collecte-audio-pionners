@@ -62,11 +62,7 @@ jobs:
 
       - name: Deploy to Vercel 🌐
         env:
-<<<<<<< HEAD
-          AUTH_TOKEN_VERCEL: ${{ secrets.AUTH_TOKEN_VERCEL_LIONEL }}
-=======
           AUTH_TOKEN_VERCEL_LIONEL: ${{ secrets.AUTH_TOKEN_VERCEL_LIONEL }}
->>>>>>> 47b6a34b18decfa3a12f775b0f75fcfcf82d6e61
         run: |
           npm install -g vercel
           cd frontend

@@ -1,8 +1,3 @@
-export interface Corpus {
-  id: number;
-  text: string;
-}
-
 export interface AudioRecorderProps {
   onRecordingComplete: (blob: Blob) => void;
 }
