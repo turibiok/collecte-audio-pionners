@@ -1,5 +1,6 @@
 import AudioRecoderPage from "./pages/AudioRecoderPage"
 import "./index.css"
+import "../styles/styles.css"
 import { Toaster } from 'react-hot-toast';
 
 
