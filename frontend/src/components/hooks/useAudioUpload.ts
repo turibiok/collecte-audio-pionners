@@ -181,6 +181,7 @@ export const useAudioUpload = () => {
 
   const handleRecordingComplete = (blob: Blob) => {
     setAudioBlob(blob);
+    handleNext(); // Appelle handleNext ici pour avancer après l'enregistrement
     toast.success('🎤 Enregistrement terminé. Cliquez sur "Écouter" ou "Envoyer".');
   };
 
