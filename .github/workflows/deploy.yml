@@ -38,35 +38,35 @@ jobs:
           echo "✅ Application Turibio déployée ! URL : $DEPLOY_URL"
 
   # Job 2: Déploiement du frontend sur Vercel Lionel (après Turibio)
-  deploy_frontend_lionel_vercel:
-    needs: deploy_frontend_turibio_vercel  # ➜ dépend de Turibio
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+  # deploy_frontend_lionel_vercel:
+  #   needs: deploy_frontend_turibio_vercel  # ➜ dépend de Turibio
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v3
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '16'
+  #     - name: Set up Node.js
+  #       uses: actions/setup-node@v3
+  #       with:
+  #         node-version: '16'
 
-      - name: Install frontend dependencies
-        run: |
-          cd frontend
-          npm install
+  #     - name: Install frontend dependencies
+  #       run: |
+  #         cd frontend
+  #         npm install
 
-      - name: Build frontend
-        run: |
-          cd frontend
-          npm run build
+  #     - name: Build frontend
+  #       run: |
+  #         cd frontend
+  #         npm run build
 
-      - name: Deploy to Vercel 🌐
-        env:
-          AUTH_TOKEN_VERCEL_LIONEL: ${{ secrets.AUTH_TOKEN_VERCEL_LIONEL }}
-        run: |
-          npm install -g vercel
-          cd frontend
-          DEPLOY_URL=$(vercel --prod --token $AUTH_TOKEN_VERCEL_LIONEL --yes --confirm --cwd .)
-          echo "✅ Application Lionel déployée ! URL : $DEPLOY_URL"
+  #     - name: Deploy to Vercel 🌐
+  #       env:
+  #         AUTH_TOKEN_VERCEL_LIONEL: ${{ secrets.AUTH_TOKEN_VERCEL_LIONEL }}
+  #       run: |
+  #         npm install -g vercel
+  #         cd frontend
+  #         DEPLOY_URL=$(vercel --prod --token $AUTH_TOKEN_VERCEL_LIONEL --yes --confirm --cwd .)
+  #         echo "✅ Application Lionel déployée ! URL : $DEPLOY_URL"
 
 

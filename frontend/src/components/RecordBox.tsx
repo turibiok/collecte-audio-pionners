@@ -15,6 +15,7 @@ function RecordBox() {
     uploadProgress,
     handleRecordingComplete,
     handleSendAudio,
+    resetTrigger,
   } = useAudioUpload();
 
   return (
@@ -32,31 +33,40 @@ function RecordBox() {
         <label className="block text-gray-700 mb-2">Lisez le corpus :</label>
 
         
-        <div className="flex flex-col items-center justify-end mb-6 p-4 bg-gray-50 rounded-lg shadow-sm hover:shadow-md transition-all">
-          <div className="flex flex-col items-center space-x-3">
-            <div className="h-8 w-8 bg-green-100 rounded-full flex items-center justify-center">
-              <span className="text-green-600 font-semibold">{currentIndex + 1}</span>
-            </div>
-            <div className="flex flex-col">
-              <span className="text-gray-700 font-bold">Corpus actuel</span>
-              <span className="text-sm text-blue-500">
-                {CorpusMatchingData.length - currentIndex - 1} corpus restants
-              </span>
-            </div>
-          </div>
 
-          <div className="flex flex-wrap items-center gap-2 max-w-[200px]">
-            {Array.from({ length: CorpusMatchingData.length }).map((_, index) => (
-              <div
-                key={index}
-                className={`h-2 w-2 rounded-full cursor-pointer transition-all ${index <= currentIndex ? 'bg-green-500' : 'bg-gray-300'
-                  }`}
-                onClick={() => index < currentIndex && handleNext()}
-                title={`Corpus ${index + 1}`}
-              />
-            ))}
-          </div>
-        </div>
+
+<div className="flex flex-col items-center justify-end mb-6 p-5 bg-white/70 backdrop-blur-md rounded-2xl shadow-[0_2px_6px_rgba(0,0,0,0.06)] hover:shadow-[0_4px_12px_rgba(0,0,0,0.08)] transition-all">
+  <div className="flex flex-col items-center space-y-2">
+    <div className="h-9 w-9 bg-green-100 rounded-full flex items-center justify-center shadow-inner">
+      <span className="text-green-600 font-semibold text-sm">{currentIndex + 1}</span>
+    </div>
+
+    <div className="text-center">
+      <span className="text-gray-600 font-semibold">Corpus actuel</span>
+      <div className="text-xs text-blue-500 mt-1 tracking-wide">
+        {CorpusMatchingData.length - currentIndex - 1} restants
+      </div>
+    </div>
+  </div>
+
+  <div className="flex flex-wrap items-center gap-2 max-w-[200px] mt-4">
+    {Array.from({ length: CorpusMatchingData.length }).map((_, index) => (
+      <div
+        key={index}
+        className={`h-2.5 w-2.5 rounded-full cursor-pointer transition-all duration-200 ease-in-out
+          ${index === currentIndex
+            ? 'bg-green-500 scale-110'
+            : index < currentIndex
+            ? 'bg-green-300 hover:scale-105'
+            : 'bg-gray-200'
+          }`}
+        onClick={() => index < currentIndex && handleNext()}
+        title={`Corpus ${index + 1}`}
+      />
+    ))}
+  </div>
+</div>
+
 
 
         <div className="mb-6">
@@ -66,20 +76,38 @@ function RecordBox() {
           </div>
         </div>
 
-        <AudioRecorder onRecordingComplete={handleRecordingComplete} />
+        <AudioRecorder onRecordingComplete={handleRecordingComplete} resetTrigger={resetTrigger} />
 
         {audioBlob && (
           <div className="py-2 border-[0.5px] border-slate-200 mt-4 space-x-4 w-full rounded-2xl flex flex-col items-center justify-center">
             <AudioPlayer audioBlob={audioBlob} />
 
-            <button
-              onClick={handleSendAudio}
-              disabled={isLoading}
-              className={`bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg shadow-md ${isLoading ? 'bg-green-400 cursor-wait' : ''
-                }`}
-            >
-              {isLoading ? 'Envoi en cours...' : "Envoyer l'audio"}
-            </button>
+         
+
+<button
+  onClick={handleSendAudio}
+  disabled={isLoading}
+  className={`relative flex items-center justify-center px-6 py-3 rounded-full font-medium text-white
+    transition-all duration-150 ease-in-out
+    ${
+      isLoading
+        ? 'bg-green-400 cursor-wait shadow-inner'
+        : 'bg-gradient-to-br from-green-500 to-green-700 shadow-[inset_0_-2px_4px_rgba(0,0,0,0.3),_0_6px_10px_rgba(0,0,0,0.25)] hover:shadow-[inset_0_2px_4px_rgba(255,255,255,0.15),_0_8px_14px_rgba(0,0,0,0.35)] hover:translate-y-[-1px] active:translate-y-[1px] active:shadow-[inset_0_2px_6px_rgba(0,0,0,0.5)]'
+    }`}
+>
+  {isLoading ? (
+    <>
+      <svg className="animate-spin h-5 w-5 mr-2 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+      </svg>
+      Envoi en cours...
+    </>
+  ) : (
+    'Envoyer l’audio'
+  )}
+</button>
+
 
             {isLoading && (
               <div className="mt-2">
@@ -89,7 +117,7 @@ function RecordBox() {
           </div>
         )}
 
-        <div className="mt-6 flex justify-end">
+        {/* <div className="mt-6 flex justify-end">
           <button
             onClick={handleNext}
             disabled={currentIndex >= CorpusMatchingData.length - 1}
@@ -97,7 +125,23 @@ function RecordBox() {
           >
             Suivant
           </button>
-        </div>
+        </div> */}
+
+        <div className="mt-6 flex justify-end">
+  <button
+    onClick={handleNext}
+    disabled={currentIndex >= CorpusMatchingData.length - 1}
+    className={`relative flex items-center justify-center px-6 py-3 rounded-full font-medium text-white transition-all duration-150 ease-in-out
+      ${
+        currentIndex >= CorpusMatchingData.length - 1
+          ? 'bg-gray-400 cursor-not-allowed shadow-inner'
+          : 'bg-gradient-to-br from-blue-500 to-blue-700 shadow-[inset_0_-2px_4px_rgba(0,0,0,0.3),_0_6px_10px_rgba(0,0,0,0.25)] hover:shadow-[inset_0_2px_4px_rgba(255,255,255,0.15),_0_8px_14px_rgba(0,0,0,0.35)] hover:translate-y-[-1px] active:translate-y-[1px] active:shadow-[inset_0_2px_6px_rgba(0,0,0,0.5)]'
+      }`}
+  >
+    Suivant
+  </button>
+</div>
+
 
       </div>
     </div>

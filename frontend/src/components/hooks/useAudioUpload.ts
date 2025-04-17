@@ -13,7 +13,8 @@ export const useAudioUpload = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [hasSentAudio, setHasSentAudio] = useState(false); // 👈 Nouveau state
-
+  const [resetTrigger, setResetTrigger] = useState(0);
+  
   const getInitialIndex = () => {
     const stored = localStorage.getItem('currentIndex');
     return stored ? parseInt(stored) : 0;
@@ -36,12 +37,6 @@ export const useAudioUpload = () => {
       toast.error('❗️Veuillez enregistrer puis envoyer l’audio avant de continuer.');
       return;
     }
-
-    if (currentIndex < CorpusMatchingData.length - 1) {
-      setCurrentIndex(currentIndex + 1);
-      setAudioBlob(null);           // Réinitialise l'audio pour le suivant
-      setHasSentAudio(false);       // 👈 Réinitialise pour le suivant
-    }
   };
 
   const handleRecordingComplete = (blob: Blob) => {
@@ -61,6 +56,12 @@ export const useAudioUpload = () => {
     return formData;
   };
 
+  useEffect(() => {
+    setAudioBlob(null);
+    setHasSentAudio(false);
+  }, [currentIndex]);
+  
+
   const handleSendAudio = async () => {
     if (!audioBlob) {
       toast.error('Veuillez enregistrer un audio.');
@@ -72,7 +73,7 @@ export const useAudioUpload = () => {
 
     try {
       const formData = createFormData({
-        corpus_id: currentIndex.toString(),
+        corpus_id:(currentIndex + 1).toString(),
         file: audioBlob
       });
 
@@ -96,13 +97,33 @@ export const useAudioUpload = () => {
       if (data.success) {
         toast.success('✅ Audio envoyé avec succès.');
         setHasSentAudio(true);     // 👈 Marque l’audio comme envoyé
+
+
+
+        // Mise à jour de l'index
         if (currentIndex < CorpusMatchingData.length - 1) {
-          setCurrentIndex(currentIndex + 1);
-          setAudioBlob(null);           // Réinitialise l'audio pour le suivant
-          setHasSentAudio(false);       // 👈 Réinitialise pour le suivant
+          // Si l'index est 149, réinitialiser à 0
+          const nextIndex = currentIndex + 1 === 149 ? 0 : currentIndex + 1;
+          setCurrentIndex(nextIndex);
+
+          setResetTrigger(prev => prev + 1);
+          setAudioBlob(null);
+          console.log(`Corpus ${nextIndex + 1} sur ${CorpusMatchingData.length}`);
+
+          setHasSentAudio(false); // Réinitialise pour le suivant
         }
-        toast.success(`vous êtes actuellement sur le corpus ${currentIndex + 2} sur ${CorpusMatchingData.length}`);
-       
+
+
+
+
+        if (currentIndex + 1 < CorpusMatchingData.length) {
+          toast.success(`Vous êtes actuellement sur le corpus ${currentIndex + 2} sur ${CorpusMatchingData.length}`);
+        } else {
+          toast.success("✅ Tous les corpus ont été complétés !");
+        }
+        
+        
+
       } else {
         throw new Error(data.error || 'Erreur lors de l\'envoi');
       }
@@ -123,5 +144,6 @@ export const useAudioUpload = () => {
     uploadProgress,
     handleRecordingComplete,
     handleSendAudio,
+    resetTrigger, //  Ajout du trigger pour le reset
   };
 };
