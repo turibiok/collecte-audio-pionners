@@ -18,29 +18,53 @@ export default function AudioPlayer({ audioBlob }: AudioPlayerProps) {
     }
   }, [audioBlob]);
 
+  // useEffect(() => {
+  //   const audio = audioRef.current;
+  //   if (!audio) return;
+
+  //   const updateProgress = () => {
+  //     if (audio.duration) {
+  //       setProgress((audio.currentTime / audio.duration) * 100);
+  //     }
+  //   };
+
+  //   const handleEnded = () => {
+  //     setIsPlaying(false);
+  //     setProgress(0);
+  //   };
+
+  //   audio.addEventListener('timeupdate', updateProgress);
+  //   audio.addEventListener('ended', handleEnded);
+
+  //   return () => {
+  //     audio.removeEventListener('timeupdate', updateProgress);
+  //     audio.removeEventListener('ended', handleEnded);
+  //   };
+  // }, []);
+
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
-
+  
+    let animationFrameId: number;
+  
     const updateProgress = () => {
-      if (audio.duration) {
+      if (audio && audio.duration) {
         setProgress((audio.currentTime / audio.duration) * 100);
       }
+      animationFrameId = requestAnimationFrame(updateProgress);
     };
-
-    const handleEnded = () => {
-      setIsPlaying(false);
-      setProgress(0);
-    };
-
-    audio.addEventListener('timeupdate', updateProgress);
-    audio.addEventListener('ended', handleEnded);
-
+  
+    if (isPlaying) {
+      animationFrameId = requestAnimationFrame(updateProgress);
+    }
+  
     return () => {
-      audio.removeEventListener('timeupdate', updateProgress);
-      audio.removeEventListener('ended', handleEnded);
+      cancelAnimationFrame(animationFrameId);
     };
-  }, []);
+  }, [isPlaying]);
+  
+
 
   const togglePlayPause = () => {
     const audio = audioRef.current;
