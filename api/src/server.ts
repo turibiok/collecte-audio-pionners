@@ -1,5 +1,6 @@
 import express from 'express';
 import audioRoutes from './routes/audio.routes';
+import etablissementRoutes from './routes/etablissement.routes';
 import cors from 'cors';
 
 const app = express();
@@ -29,7 +30,7 @@ app.use(express.json());
 
 // Routes
 app.use('/api', audioRoutes);
-
+app.use('/api', etablissementRoutes);
 // Démarre le serveur
 app.listen(PORT, () => {
   console.log(`Serveur en écoute sur le port ${PORT}`);
