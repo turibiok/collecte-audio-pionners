@@ -19,21 +19,6 @@ const extract = (data: ResponseData): Etablissement[] => {
     return data.hits.hits.map((hit: any) => {
       const s = hit._source || {};
       return {
-        name: s.etablissement_text || '',
-        email: s.email_text || '',
-        phone: s.t_l_phone_text || '',
-        country: s.pays_option_os_pays || '',
-        website: s.site_web_text || ''
-      };
-    });
-  }
-
-  
-  // Cas 3 : EtablissementsResponse (mget)
-  if ('docs' in data && Array.isArray(data.docs)) {
-    return data.docs.map((doc: any) => {
-      const s = doc._source || {};
-      return {
         name: s.nom1_text || '',
         email: s.adresse_email_text || '',
         phone: s.t_l_phone_text || '',
@@ -43,6 +28,21 @@ const extract = (data: ResponseData): Etablissement[] => {
     });
   }
 
+  
+  // // Cas 3 : EtablissementsResponse (mget)
+  // if ('docs' in data && Array.isArray(data.docs)) {
+  //   return data.docs.map((doc: any) => {
+  //     const s = doc._source || {};
+  //     return {
+  //       name: s.nom1_text || '',
+  //       email: s.adresse_email_text || '',
+  //       phone: s.t_l_phone_text || '',
+  //       country: s.pays_option_os_pays || '',
+  //       website: s.site_web_text || ''
+  //     };
+  //   });
+  // }
+
 
   // Cas 2 : ApiResponse (msearch)
 
@@ -50,16 +50,16 @@ const extract = (data: ResponseData): Etablissement[] => {
     return data.responses.flatMap(resp => {
       return resp.hits?.hits?.map(hit => {
         const source = hit._source as {
-          etablissement_text?: string,
-          email_text?: string,
+          nom1_text?: string,
+          adresse_email_text?: string,
           t_l_phone_text?: string,
           pays_option_os_pays?: string,
           site_web_text?: string
         } || {}
   
         return {
-          name: source.etablissement_text || "",
-          email: source.email_text || "",
+          name: source.nom1_text || "",
+          email: source.adresse_email_text || "",
           phone: source.t_l_phone_text || "",
           country: source.pays_option_os_pays || "",
           website: source.site_web_text || ""
