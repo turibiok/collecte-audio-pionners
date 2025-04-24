@@ -97,5 +97,6 @@ export const getAllEtablissements = async (payload: PostObjetDataType[]) => {
     }
   }
 
-  return Array.from(seen.values());
+  // return Array.from(seen.values());
+  return Array.from(seen.values())
 };
