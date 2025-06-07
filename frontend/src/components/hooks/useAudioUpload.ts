@@ -77,7 +77,7 @@ export const useAudioUpload = () => {
         file: audioBlob
       });
 
-      const response = await fetch('http://collection.urmaphalab.com/api/upload-audio/', {
+      const response = await fetch('https://collection.urmaphalab.com/api/upload-audio/', {
         method: 'POST',
         body: formData,
       });
