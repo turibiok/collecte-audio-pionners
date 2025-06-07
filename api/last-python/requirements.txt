@@ -1,4 +1,0 @@
-Flask==2.2.5
-Werkzeug==2.2.3
-kaggle==1.5.12
-flask_cors==5.0.1
